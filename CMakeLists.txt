@@ -10,7 +10,7 @@ set(LIBZ "z")
 
 SET(REQUIRED_LIBRARIES ${LIBFUSE} ${LIBPTHREAD})
 foreach(LIB ${REQUIRED_LIBRARIES})
-  find_library(FOUND${LIB} ${LIB} PATHS "/lib64" "/usr/lib64")
+  find_library(FOUND${LIB} ${LIB} PATHS "/lib64" "/usr/lib64" "/lib32" "/usr/lib32")
   if (NOT FOUND${LIB})
     message(FATAL_ERROR "The required library '${LIB}' was not found. Please install it on your system first.")
   endif(NOT FOUND${LIB})
