@@ -1131,7 +1131,7 @@ static int isofs_parse_sa(isofs_inode *inode, char *sa, size_t sa_len) {
                         free(buf);
                         return -EIO;
                     };
-                    if(sa_len < 0) {
+                    if(record_length < (name_len + sizeof(struct iso_directory_record) + pad_len)) {
                         // probably something wrong with name_len
 /*                        fprintf(stderr, "parse_sa: CL record: wrong name_len in directory entry: %d, record_length %d\n", 
                             name_len, record_length);*/
@@ -1436,7 +1436,7 @@ int isofs_real_readdir(const char *path, void *filler_buf, isofs_dir_fill_t fill
                 free(buf);
                 return -EIO;
             };
-            if(sa_len < 0) {
+            if(record_length < (name_len + sizeof(struct iso_directory_record) + pad_len)) {
                 // probably something wrong with name_len
 //                fprintf(stderr, "readdir: wrong name_len in directory entry: %d, record_length %d\n", 
 //                    name_len, record_length);
