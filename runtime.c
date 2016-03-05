@@ -50,6 +50,8 @@ http://www.google.com/codesearch#n76pnUnMG18/trunk/blender/imbuf/intern/thumbs.c
 #include <ctype.h>
 #include <time.h>
 
+#include <glib.h>
+
 #define FILE_MAX                                 240
 #define URI_MAX FILE_MAX*3 + 8
 
@@ -172,16 +174,15 @@ write_pipe_thread (void *arg)
   return NULL;
 }
 
-void
+int
 run_when_fuse_fs_mounted (void)
 {
 
 //    sprintf(stderr, "Called run_when_fuse_fs_mounted");
     pthread_t thread;
-    int res;
 
     fuse_pid = getpid();
-    res = pthread_create(&thread, NULL, write_pipe_thread, keepalive_pipe);
+    return pthread_create(&thread, NULL, write_pipe_thread, keepalive_pipe);
 }
 
 char* getArg(int argc, char *argv[],char chr)
@@ -249,12 +250,14 @@ main (int argc, char *argv[])
   } else {
     /* in parent, child is $pid */
     int c;
+    int read_res;
 
     /* close write pipe */
     close (keepalive_pipe[1]);
 
     /* Pause until mounted */
-    read (keepalive_pipe[0], &c, 1);
+    read_res = read (keepalive_pipe[0], &c, 1);
+    (void)read_res;
 
 
     dir_fd = open (mount_dir, O_RDONLY);
@@ -300,6 +303,7 @@ main (int argc, char *argv[])
 
 	FILE *from, *to;
 	char ch;
+	int mkdir_res;
 
 	char diricon[FILE_MAX];
 	sprintf (diricon, "%s/.DirIcon", mount_dir);
@@ -311,11 +315,12 @@ main (int argc, char *argv[])
 	}
 
 	/* open destination file */
-        char mkcmd[FILE_MAX];
-        char iconsdir[FILE_MAX];
+	char mkcmd[FILE_MAX];
+	char iconsdir[FILE_MAX];
 
-        sprintf(mkcmd, "mkdir -p '%s'", thumbnails_medium_dir);
-        system(mkcmd);
+	sprintf(mkcmd, "mkdir -p '%s'", thumbnails_medium_dir);
+	mkdir_res = system(mkcmd);
+	(void)mkdir_res;
 	if((to = fopen(path_to_thumbnail, "wb"))==NULL) {
 		printf("Cannot open %s for writing\n", path_to_thumbnail);
 		

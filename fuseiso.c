@@ -31,10 +31,12 @@
 #include <mntent.h>
 #include <sys/param.h>
 #include <linux/iso_fs.h>
+#include <unistd.h>
 
 #define FUSE_USE_VERSION 22
 #include <fuse.h>
 #include "isofs.h"
+#include "runtime.h"
 
 #ifdef __GNUC__
 # define UNUSED(x) x __attribute__((unused))
@@ -52,8 +54,8 @@ char* iocharset;
 
 char* normalize_name(const char* fname) {
     char* abs_fname = (char *) malloc(PATH_MAX);
-    realpath(fname, abs_fname);
-    // ignore errors from realpath()
+    char* res = realpath(fname, abs_fname);
+    (void)res; // ignore errors from realpath()
     return abs_fname;
 };
 
@@ -107,11 +109,17 @@ static int isofs_flush(const char *UNUSED(path), struct fuse_file_info *UNUSED(f
 
 static void* isofs_init() {
     int rc;
-    run_when_fuse_fs_mounted();
+    rc = run_when_fuse_fs_mounted();
+    if(rc != 0)
+    {
+        // TODO check errno
+        // see: man 3 pthread_create
+    }
     return isofs_real_init();
 };
 
 static void isofs_destroy(void* param) {
+    (void)param;
     return;
 };
 

@@ -377,7 +377,7 @@ static int isofs_check_rr(struct iso_directory_record *root_record) {
         free(buf);
         return -EIO;
     };
-    if(sa_len < 0) {
+    if(record_length < (name_len + sizeof(struct iso_directory_record) + pad_len)) {
         // probably something wrong with name_len
 //        fprintf(stderr, "check_rr: wrong name_len in directory entry: %d, record_length %d\n", 
 //            name_len, record_length);
@@ -435,7 +435,7 @@ static isofs_inode *isofs_lookup(const char *path) {
 //     printf("start search for %s\n", path);
     gchar **parts = g_strsplit(path, "/", -1);
     guint parts_len = local_g_strv_length(parts);
-    int partno = 1;
+    guint partno = 1;
     gchar *rpath = g_strdup("/");
     gchar *rpath1 = "";
     gchar *part = parts[partno];
@@ -602,7 +602,7 @@ static char *isofs_fix_entry(char *entry, size_t len) {
     } else {
         // initialize iconv descriptor
         iconv_t cd = iconv_open(iocharset, "UCS-2BE");
-        if(cd < 0) {
+        if(cd == (iconv_t)-1) {
 //            perror("iconv");
             return NULL;
         };

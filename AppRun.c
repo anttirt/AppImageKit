@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
     f = fopen(namelist[0]->d_name, "r");
 
     char *line = malloc(LINE_SIZE);
-    unsigned int n = LINE_SIZE;
+    size_t n = LINE_SIZE;
     int found = 0;
 
     while (getline( &line, &n, f ) != -1)
