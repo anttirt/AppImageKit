@@ -814,7 +814,7 @@ static int isofs_parse_sa(isofs_inode *inode, char *sa, size_t sa_len) {
                         // something wrong with continuation area offset and/or size
 /*                        fprintf(stderr, 
                             "parse_sa: wrong continuation area: extent %d, cont_offset %d, cont_size %d\n", 
-                            cont_block, cont_offset, cont_size);'/
+                            cont_block, cont_offset, cont_size);*/
                         cont_block = 0; // do not process it
                     } else {
 /*                        printf("parse_sa: CE entry, extent %d, offset %d, size %d\n", 
